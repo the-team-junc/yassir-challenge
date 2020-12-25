@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8' />
+    <title>Junction X Algiers, Travel time App</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css" type="text/css">
+
+    <script
+        src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.min.js'></script>
+    <link rel='stylesheet'
+        href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.css'
+        type='text/css' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.js'></script>
+    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.css'
+        type='text/css' />
+    <link rel='stylesheet' href='styles.css' type='text/css' />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map-container {
+            /* background-color: white; */
+            padding-top: 15px;
+            z-index: 998;
+            /* margin-left: 15%; */
+            
+        }
+
+        #map {
+            position: absolute;
+            top: 10%;
+            left: 05%;
+            width: 95%;
+            height: 70%;
+        }
+    </style>
+    <script src="https://use.fontawesome.com/f52025b353.js"></script>
+</head>
+
+<body>
+    <button class="btn btn-info" id="drawer-btn" onclick="toggleDrawer()">
+        <i class="fa fa-bars "></i>
+
+    </button>
+    <div id="drawer" class="">
+        <div class="mt-5">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link active" href="#">Make a Route</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Travel History</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="settings.html">Settings</a>
+                </li>
+              </ul>
+            
+        </div>
+
+    </div>
+    <div style="height: 10%;">
+        <h2 class="text-primary text-center">Reach your direction with no late</h2>
+
+    </div>
+    
+
+    <div id='map'>
+
+        <div id="map-container" class="col-sm-12 col-md-4 m">
+            <div class="row">
+                <div class="geocoder col-sm-12">
+                    <div id="geocoder"></div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="text-muted text-center"> OR</div>
+                </div>
+    
+                <div class="col-sm-12">
+                    <form id="coords-form" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                  <label for="exampleFormControlInput1">Deparature Lat</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="exampleFormControlInput1"
+                                    name="depLat"
+                                    required
+                                    placeholder="Deparature Lat ..."
+                                  />
+                                </div>
+                                
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                  <label for="exampleFormControlInput1">Deparature Lang</label>
+                                  <input
+                                    type="text"
+                                    class="form-control"
+                                    id="exampleFormControlInput1"
+                                    name="depLng"
+                                    required
+                                    placeholder="Deparature Lang ..."
+                                  />
+                                </div>
+                                
+                            </div>
+                          
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="exampleFormControlInput1">Arrival Lat</label>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="exampleFormControlInput1"
+                                      name="arrLat"
+                                      required
+                                      placeholder="Arrival Lat ..."
+                                    />
+                                </div>
+                                
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="exampleFormControlInput1">Arrival Lang</label>
+                                    <input
+                                      type="text"
+                                      class="form-control"
+                                      id="exampleFormControlInput1"
+                                      name="arrLng"
+                                      required
+                                      placeholder="Arrival Lang ..."
+                                    />
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary" type="submit"> Make a Route</button>
+                        </div>
+                      </form>
+                    
+                </div>
+                <div id='instructions' class="col-sm-12">
+                    <div id="calculated-line"></div>
+                </div>
+    
+            </div>
+    
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Application Settings</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label for="server-url-input">SERVER URL</label>
+                    <input
+                      type="url"
+                      class="form-control"
+                      id="server-url-input"
+                      name="server-url-input"
+                      value="htt://localhost:5000/"
+                      required
+                      placeholder="name@example.com"
+                    />
+                  </div>
+              
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary">Save changes</button>
+              <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="main.js"></script>
+    <script>
+        function toggleDrawer(){
+            $('#drawer').toggleClass('opened')
+            $('#drawer-btn').toggleClass('opened')
+        }
+    </script>
+
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZmFraHIiLCJhIjoiY2pseXc0djE0MHBibzN2b2h4MzVoZjk4aSJ9.ImbyLtfsfSsR_yyBluR8yQ';
+        var instructions = document.getElementById('instructions');
+        var map = new mapboxgl.Map({
+            container: 'map', // container id
+            style: 'mapbox://styles/mapbox/streets-v9', //hosted style id
+            center: [3.04197,36.752887  ], // starting position
+            zoom: 13, // starting zoom
+            minZoom: 5 // keep it local
+        });
+        //  geocoder here
+        var geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            // limit results to Australia
+            //country: 'IN',
+        });
+
+        // After the map style has loaded on the page, add a source layer and default
+        // styling for a single point.
+        map.on('load', function () {
+            // Listen for the `result` event from the MapboxGeocoder that is triggered when a user
+            // makes a selection and add a symbol that matches the result.
+            geocoder.on('result', function (ev) {
+                console.log(ev.result.center);
+
+            });
+        });
+        var draw = new MapboxDraw({
+            displayControlsDefault: false,
+            controls: {
+                line_string: true,
+                trash: true
+            },
+            styles: [
+                // ACTIVE (being drawn)
+                // line stroke
+                {
+                    "id": "gl-draw-line",
+                    "type": "line",
+                    "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
+                    "layout": {
+                        "line-cap": "round",
+                        "line-join": "round"
+                    },
+                    "paint": {
+                        "line-color": "#3b9ddd",
+                        "line-dasharray": [0.2, 2],
+                        "line-width": 4,
+                        "line-opacity": 0.7
+                    }
+                },
+                // vertex point halos
+                {
+                    "id": "gl-draw-polygon-and-line-vertex-halo-active",
+                    "type": "circle",
+                    "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+                    "paint": {
+                        "circle-radius": 10,
+                        "circle-color": "#FFF"
+                    }
+                },
+                // vertex points
+                {
+                    "id": "gl-draw-polygon-and-line-vertex-active",
+                    "type": "circle",
+                    "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+                    "paint": {
+                        "circle-radius": 6,
+                        "circle-color": "#3b9ddd",
+                    }
+                },
+            ]
+        });
+        // add the draw tool to the map
+        map.addControl(draw);
+
+        // add create, update, or delete actions
+        map.on('draw.create', updateRoute);
+        map.on('draw.update', updateRoute);
+        map.on('draw.delete', removeRoute);
+
+        // use the coordinates you just drew to make your directions request
+        function updateRoute() {
+            removeRoute(); // overwrite any existing layers
+            var data = draw.getAll();
+            var lastFeature = data.features.length - 1;
+            var coords = data.features[lastFeature].geometry.coordinates;
+            var newCoords = coords.join(';');
+            getMatch(newCoords);
+        }
+
+        // make a directions request
+        function getMatch(e) {
+            var url = 'https://api.mapbox.com/directions/v5/mapbox/cycling/' + e
+                + '?geometries=geojson&steps=true&access_token=' + mapboxgl.accessToken;
+            var req = new XMLHttpRequest();
+            req.responseType = 'json';
+            req.open('GET', url, true);
+            req.onload = function () {
+                var jsonResponse = req.response;
+                var distance = jsonResponse.routes[0].distance * 0.001;
+                var duration = jsonResponse.routes[0].duration / 60;
+                var steps = jsonResponse.routes[0].legs[0].steps;
+                var coords = jsonResponse.routes[0].geometry;
+                //  console.log(steps);
+                console.log(coords);
+                //  console.log(distance);
+                // console.log(duration);
+
+                // get route directions on load map
+                steps.forEach(function (step) {
+                    instructions.insertAdjacentHTML('beforeend', '<p>' + step.maneuver.instruction + '</p>');
+                });
+                // get distance and duration
+                instructions.insertAdjacentHTML('beforeend', '<p>' + 'Distance: ' + distance.toFixed(2) 
+                    // +' km<br>Duration: ' + duration.toFixed(2) + ' minutes' + '</p>'
+                     );
+
+                // add the route to the map
+                addRoute(coords);
+                //  console.log(coordinates);
+
+            };
+            req.send();
+        }
+
+        // adds the route as a layer on the map
+        function addRoute(coords) {
+            // check if the route is already loaded
+            if (map.getSource('route') && false) {
+                // map.removeLayer('route');
+                // map.removeSource('route')
+            } else {
+                map.addLayer({
+                    "id": "route",
+                    "type": "line",
+                    "source": {
+                        "type": "geojson",
+                        "data": {
+                            "type": "Feature",
+                            "properties": {},
+                            "geometry": coords
+                        }
+                    },
+                    "layout": {
+                        "line-join": "round",
+                        "line-cap": "round"
+                    },
+                    "paint": {
+                        "line-color": "#1db7dd",
+                        "line-width": 8,
+                        "line-opacity": 0.8
+                    }
+                });
+            };
+        }
+
+        // remove the layer if it exists
+        function removeRoute() {
+            if (map.getSource('route')) {
+                map.removeLayer('route');
+                map.removeSource('route');
+                instructions.innerHTML = '';
+            } else {
+                return;
+            }
+        }
+        document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+
+    </script>
+
+</body>
+
+</html>

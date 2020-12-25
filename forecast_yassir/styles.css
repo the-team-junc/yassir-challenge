@@ -1,0 +1,62 @@
+#drawer {
+    position: absolute;
+    top:0;
+    left:0;
+    height: 100% !important;
+    min-height: 100vh;
+    max-width: 25vw;
+    width: 0;
+    display: none;
+    transition: all 0.3s ease-in-out;
+    z-index: 999;
+    background-color: aliceblue;
+
+}
+#drawer li {
+    margin-bottom: 15px;
+}
+#drawer.opened {
+    width: 25Vw;
+    display: block;
+}
+#drawer-btn {
+    margin-left: 5px;
+    position: absolute;
+    top:0;
+    left: 5px;
+    transition: all 0.3s ease-in-out;
+}
+#drawer-btn.opened{
+    left: 26Vw;
+}
+
+.geocoderp {
+    height: 100px;
+    min-width: 25%;
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    background-color: rgba(255, 255, 255, .9);
+    padding: 15px;
+    text-align: left;
+    font-family: 'Arial';
+    margin: 0;
+    font-size: 13px;
+}
+.geocoderp input{
+    height: 100px;
+    width: 100%;
+}
+#instructions {
+    /* position:absolute;
+    height: 50px;
+    min-width: 25%;
+    margin:20px;
+    top:0;
+    bottom:0; */
+    max-height: 150px;
+    padding: 20px;
+    background-color: rgba(255,255,255,0.9);
+    overflow-y: scroll;
+    font-family: sans-serif;
+}
