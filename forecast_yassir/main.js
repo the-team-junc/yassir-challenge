@@ -17,7 +17,10 @@ window.addEventListener(
             let requestOptions={
                 type: "POST",
                 url: SERVER_URL+"estimate",
-                "Content-Type": "application/json",
+                // "Content-Type": "application/json",
+                // headers: {
+                //     'Access-Control-Allow-Origin': '*',
+                // },
                
                 data: datastring
               };
@@ -27,7 +30,6 @@ window.addEventListener(
                 ...requestOptions,
                 success: function (response) {
                   console.log(response);
-                  displayLoading(false);
                 
                 },
                 error: function (error) {
