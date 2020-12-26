@@ -20,6 +20,16 @@
     <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.js'></script>
     <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.css'
         type='text/css' />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
     <link rel='stylesheet' href='styles.css' type='text/css' />
     <style>
         body {
@@ -61,7 +71,7 @@
                   <a class="nav-link" href="#">Travel History</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="settings.html">Settings</a>
+                  <a class="nav-link" href="#" data-toggle="modal" data-target="#settings-modal">Settings</a>
                 </li>
               </ul>
             
@@ -72,7 +82,9 @@
         <h2 class="text-primary text-center">Reach your direction with no late</h2>
 
     </div>
-    
+
+
+
 
     <div id='map'>
 
@@ -163,7 +175,8 @@
         </div>
     </div>
 
-    <div class="modal" tabindex="-1" role="dialog">
+
+    <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" id="settings-modal">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -189,8 +202,7 @@
               
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-primary">Save changes</button>
-              <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+              <button type="button" class="btn btn-primary close"  data-dismiss="modal" aria-label="Close">Save changes</button>
             </div>
           </div>
         </div>
@@ -316,18 +328,29 @@
                 //  console.log(distance);
                 // console.log(duration);
 
+                instructions.insertAdjacentHTML('beforeend', '<b class="text-center text-info"> Directions </b>');
                 // get route directions on load map
                 steps.forEach(function (step) {
                     instructions.insertAdjacentHTML('beforeend', '<p>' + step.maneuver.instruction + '</p>');
                 });
                 // get distance and duration
-                instructions.insertAdjacentHTML('beforeend', '<p>' + 'Distance: ' + distance.toFixed(2) 
+                instructions.insertAdjacentHTML('beforeend', '<p>' + 'Distance: ' + distance.toFixed(2)+' Km' 
+                    +'<div id="eta-container"></div>'
                     // +' km<br>Duration: ' + duration.toFixed(2) + ' minutes' + '</p>'
                      );
 
                 // add the route to the map
                 addRoute(coords);
                 //  console.log(coordinates);
+
+                let dep=coords.coordinates[0], arr=coords.coordinates[coords.coordinates.length-1];
+                request_estimation({
+                    depLat: dep[1],
+                    depLng : dep[0],
+                    arrLat: arr[1],
+                    arrLng : arr[0],
+                    token: duration.toFixed(2)
+                })
 
             };
             req.send();
